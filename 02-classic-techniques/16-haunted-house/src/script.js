@@ -74,6 +74,13 @@ const fasciaNormalTexture = textureLoader.load('/textures/fascia/normal.jpg')
 const fasciaRoughnessTexture = textureLoader.load('/textures/fascia/roughness.jpg')
 // const fasciaHeightTexture = textureLoader.load('/textures/fascia/height.png')
 
+const glassColorTexture = textureLoader.load('/textures/glass/color.jpg')
+glassColorTexture.colorSpace = THREE.SRGBColorSpace
+const glassAmbientOcclusionTexture = textureLoader.load('/textures/glass/ambientOcclusion.jpg')
+const glassNormalTexture = textureLoader.load('/textures/glass/normal.jpg')
+const glassRoughnessTexture = textureLoader.load('/textures/glass/roughness.jpg')
+// const glassHeightTexture = textureLoader.load('/textures/glass/height.png')
+
 
 grassColorTexture.repeat.set(20, 20)
 grassAmbientOcclusionTexture.repeat.set(20, 20)
@@ -120,9 +127,10 @@ fasciaAmbientOcclusionTexture.wrapT = THREE.RepeatWrapping
 fasciaNormalTexture.wrapT = THREE.RepeatWrapping
 fasciaRoughnessTexture.wrapT = THREE.RepeatWrapping
 
-
-
-
+glassColorTexture.repeat.set(1, 1)
+glassAmbientOcclusionTexture.repeat.set(1, 1)
+glassNormalTexture.repeat.set(1, 1)
+glassRoughnessTexture.repeat.set(1, 1)
 
 /**
  * House
@@ -201,20 +209,21 @@ door.position.z = 2 + 0.01
 house.add(door)
 
 // Windows
+const windows = new THREE.Group()
+house.add(windows)
+
 const window1 = new THREE.Mesh(
     new THREE.PlaneGeometry(1, 1, 100, 100),
     new THREE.MeshStandardMaterial({
-        map: doorColorTexture,
-        // alphaMap: doorAlphaTexture,
-        transparent: true,
-        aoMap: doorAmbientOcclusionTexture,
-        displacementMap: doorHeightTexture,
-        displacementScale: 0.1,
-        normalMap: doorNormalTexture,
-        metalnessMap: doorMetalnessTexture,
-        roughnessMap: doorRoughnessTexture,
+        map: glassColorTexture,
+        aoMap: glassAmbientOcclusionTexture,
+        normalMap: glassNormalTexture,
+        roughnessMap: glassRoughnessTexture,
+        // displacementMap: glassHeightTexture,
+        // displacementScale: 0.1,
     })
 )
+window1.receiveShadow = true
 window1.position.x = 1
 window1.position.y = 1.2
 window1.position.z = 2 + 0.01
@@ -222,24 +231,187 @@ window1.position.z = 2 + 0.01
 const window2 = new THREE.Mesh(
     new THREE.PlaneGeometry(1, 1, 100, 100),
     new THREE.MeshStandardMaterial({
-        map: doorColorTexture,
-        // alphaMap: doorAlphaTexture,
-        transparent: true,
-        aoMap: doorAmbientOcclusionTexture,
-        displacementMap: doorHeightTexture,
-        displacementScale: 0.1,
-        normalMap: doorNormalTexture,
-        metalnessMap: doorMetalnessTexture,
-        roughnessMap: doorRoughnessTexture,
+        map: glassColorTexture,
+        aoMap: glassAmbientOcclusionTexture,
+        normalMap: glassNormalTexture,
+        roughnessMap: glassRoughnessTexture,
+        // displacementMap: glassHeightTexture,
+        // displacementScale: 0.1,
     })
 )
+window2.receiveShadow = true
 window2.position.x = -.8
 window2.position.y = 1.2
 window2.position.z = -2 - 0.01
 window2.rotation.y = Math.PI
 
+windows.add(window1, window2)
 
-house.add(window1, window2)
+// Frames
+const frameMaterial = new THREE.MeshStandardMaterial({
+    map: fasciaColorTexture,
+    aoMap: fasciaAmbientOcclusionTexture,
+    normalMap: fasciaNormalTexture,
+    roughnessMap: fasciaRoughnessTexture,
+    // displacementMap: fasciaHeightTexture,
+    // displacementScale: 0.1,
+})
+
+const sill1 = new THREE.Mesh(
+    new THREE.BoxGeometry(1.2, .1, .1),
+    frameMaterial
+)
+sill1.castShadow = true
+sill1.receiveShadow = true
+sill1.position.x = 1
+sill1.position.y = .8
+sill1.position.z = 2 + 0.025
+
+const sill2 = new THREE.Mesh(
+    new THREE.BoxGeometry(1.2, .1, .1),
+    frameMaterial
+)
+sill2.castShadow = true
+sill2.receiveShadow = true
+sill2.position.x = -.8
+sill2.position.y = .8
+sill2.position.z = -2 - 0.025
+
+const frameTop1 = new THREE.Mesh(
+    new THREE.BoxGeometry(1.05, .1, .1),
+    frameMaterial
+)
+frameTop1.castShadow = true
+frameTop1.receiveShadow = true
+frameTop1.position.x = 1
+frameTop1.position.y = 1.7
+frameTop1.position.z = 1.95 + 0.025
+
+const frameTop2 = new THREE.Mesh(
+    new THREE.BoxGeometry(1.05, .1, .1),
+    frameMaterial
+)
+frameTop2.castShadow = true
+frameTop2.receiveShadow = true
+frameTop2.position.x = -.8
+frameTop2.position.y = 1.7
+frameTop2.position.z = -1.95 - 0.025
+
+const frameMiddleX1 = new THREE.Mesh(
+    new THREE.BoxGeometry(1, .05, .09),
+    frameMaterial
+)
+frameMiddleX1.castShadow = true
+frameMiddleX1.receiveShadow = true
+frameMiddleX1.position.x = 1
+frameMiddleX1.position.y = 1.25
+frameMiddleX1.position.z = 1.95 + 0.025
+
+const frameMiddleX2 = new THREE.Mesh(
+    new THREE.BoxGeometry(1, .05, .09),
+    frameMaterial
+)
+frameMiddleX2.castShadow = true
+frameMiddleX2.receiveShadow = true
+frameMiddleX2.position.x = -.8
+frameMiddleX2.position.y = 1.25
+frameMiddleX2.position.z = -1.95 - 0.025
+
+const frameMiddleY1 = new THREE.Mesh(
+    new THREE.BoxGeometry(.8, .05, .09),
+    frameMaterial
+)
+frameMiddleY1.castShadow = true
+frameMiddleY1.receiveShadow = true
+frameMiddleY1.position.x = 1
+frameMiddleY1.position.y = 1.25
+frameMiddleY1.position.z = 1.95 + 0.03
+frameMiddleY1.rotation.z = Math.PI * .5
+
+const frameMiddleY2 = new THREE.Mesh(
+    new THREE.BoxGeometry(.8, .05, .09),
+    frameMaterial
+)
+frameMiddleY2.castShadow = true
+frameMiddleY2.receiveShadow = true
+frameMiddleY2.position.x = -.8
+frameMiddleY2.position.y = 1.25
+frameMiddleY2.position.z = -1.95 - 0.03
+frameMiddleY2.rotation.z = Math.PI * .5
+
+const frameBottom1 = new THREE.Mesh(
+    new THREE.BoxGeometry(1.05, .1, .1),
+    frameMaterial
+)
+frameBottom1.castShadow = true
+frameBottom1.receiveShadow = true
+frameBottom1.position.x = 1
+frameBottom1.position.y = .75
+frameBottom1.position.z = 1.95 + 0.025
+
+const frameBottom2 = new THREE.Mesh(
+    new THREE.BoxGeometry(1, .1, .1),
+    frameMaterial
+)
+frameBottom2.castShadow = true
+frameBottom2.receiveShadow = true
+frameBottom2.position.x = -.8
+frameBottom2.position.y = .75
+frameBottom2.position.z = -1.95 - 0.025
+
+const frameRight1 = new THREE.Mesh(
+    new THREE.BoxGeometry(1, .1, .11),
+    frameMaterial
+)
+frameRight1.castShadow = true
+frameRight1.receiveShadow = true
+frameRight1.position.x = 1.5
+frameRight1.position.y = 1.255
+frameRight1.position.z = 1.95 + 0.04
+frameRight1.rotation.z = Math.PI * .5
+
+const frameRight2 = new THREE.Mesh(
+    new THREE.BoxGeometry(1, .1, .11),
+    frameMaterial
+)
+frameRight2.castShadow = true
+frameRight2.receiveShadow = true
+frameRight2.position.x = -1.3
+frameRight2.position.y = 1.255
+frameRight2.position.z = -1.95 - 0.04
+frameRight2.rotation.z = Math.PI * .5
+
+const frameLeft1 = new THREE.Mesh(
+    new THREE.BoxGeometry(1, .1, .11),
+    frameMaterial
+)
+frameLeft1.castShadow = true
+frameLeft1.receiveShadow = true
+frameLeft1.position.x = .5
+frameLeft1.position.y = 1.255
+frameLeft1.position.z = 1.95 + 0.04
+frameLeft1.rotation.z = Math.PI * .5
+
+const frameLeft2 = new THREE.Mesh(
+    new THREE.BoxGeometry(1, .1, .11),
+    frameMaterial
+)
+frameLeft2.castShadow = true
+frameLeft2.receiveShadow = true
+frameLeft2.position.x = -.3
+frameLeft2.position.y = 1.255
+frameLeft2.position.z = -1.95 - 0.04
+frameLeft2.rotation.z = Math.PI * .5
+
+windows.add(
+    sill1, sill2, 
+    frameTop1, frameTop2, 
+    frameMiddleX1, frameMiddleX2,
+    frameMiddleY1, frameMiddleY2,  
+    frameBottom1, frameBottom2,
+    frameRight1, frameRight2,
+    frameLeft1, frameLeft2,
+)
 
 // Bushes
 const bushGeometry = new THREE.SphereGeometry(1, 16, 16)
