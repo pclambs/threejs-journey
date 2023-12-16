@@ -18,18 +18,21 @@ const scene = new THREE.Scene()
  * Textures
  */
 const textureLoader = new THREE.TextureLoader()
+const particleTexture = textureLoader.load('/textures/particles/2.png')
 
 /*
  * Particles
  */
 // Geometry
 const particlesGeometry = new THREE.BufferGeometry()
-const count = 5000000
+const count = 500000
 
 const positions = new Float32Array(count * 3)
+const colors = new Float32Array(count * 3)
 
 for(let i = 0;i < count * 3; i++) {
-    positions[i] = (Math.random() - 0.5) * 1000
+    positions[i] = (Math.random() - 0.5) * 10
+    colors[i] = Math.random()
 }
 
 particlesGeometry.setAttribute(
@@ -37,19 +40,35 @@ particlesGeometry.setAttribute(
     new THREE.BufferAttribute(positions, 3) 
 )
 
+particlesGeometry.setAttribute(
+    'color',
+    new THREE.BufferAttribute(colors, 3)
+)
+
 // Material
 const particlesMaterial = new THREE.PointsMaterial ({
+    map: particleTexture,
     size: 0.02,
     sizeAttenuation: true,
-    // depthWrite: false,
-    // blending: THREE.AdditiveBlending,
-    // vertexColors: true
-    color: 'red'
+    transparent: true,
+    alphaMap: particleTexture,
+    // alphaTest: 0.001, 
+    // depthTest: false,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexColors: true,
+    // color: '#ff88cc'
 })
 
 // Points
 const particles = new THREE.Points(particlesGeometry, particlesMaterial)
 scene.add(particles)
+
+// cube 
+// const cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
+// const cubeMaterial = new THREE.MeshBasicMaterial({})
+// const cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+// scene.add(cube)
 
 /**
  * Sizes
@@ -78,7 +97,7 @@ window.addEventListener('resize', () =>
  * Camera
  */
 // Base camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.01, 10000)
 camera.position.z = 3
 scene.add(camera)
 
@@ -103,6 +122,16 @@ const clock = new THREE.Clock()
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
+    // Update particles
+    // particles.rotation.y = elapsedTime * .02
+
+    for(let i = 0; i < count; i++) {
+        const i3 = i * 3
+        const x = particlesGeometry.attributes.position.array[i3]
+        particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(elapsedTime + x)
+    }
+
+    particlesGeometry.attributes.position.needsUpdate = true
 
     // Update controls
     controls.update()
