@@ -14,25 +14,104 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
-/**
- * Test cube
+// /**
+//  * Test cube
+//  */
+// const cube = new THREE.Mesh(
+//     new THREE.BoxGeometry(1, 1, 1),
+//     new THREE.MeshBasicMaterial()
+// )
+// scene.add(cube)
+
+/*
+ * Galaxy 
  */
-const cube = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial()
-)
-scene.add(cube)
+const parameters = {
+    count: 10000,
+    size: 0.01,
+    radius: 5,
+    branches: 3,
+    spin: 1,
+    speed: 0.01,
+}
+
+let geometry = null
+let material = null
+let points = null
+let speed = 0
+
+const generateGalaxy = () => {
+
+    if (points !== null) {
+        geometry.dispose()
+        material.dispose()
+        scene.remove(points)
+    }
+
+    /*
+    * Geometry 
+    */
+    geometry = new THREE.BufferGeometry()
+
+    const positions = new Float32Array(parameters.count * 3)
+
+    for (let i = 0; i < parameters.count * 3; i++) {
+        const i3 = i * 3
+
+        positions[i3] = (Math.random() - 0.5) * 3
+        positions[i3 + 1] = (Math.random() - 0.5) * 3
+        positions[i3 + 2] = (Math.random() - 0.5) * 3
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+
+    /*
+    * Material
+    */
+    material = new THREE.PointsMaterial({
+        size: parameters.size,
+        sizeAttenuation: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+    })
+
+    /*
+    * Points
+    */
+    points = new THREE.Points(geometry, material)
+
+    for(let i = 0; i < parameters.count; i++) {
+        const i3 = i * 3
+
+        const radius = Math.random() * parameters.radius
+        const spinAngle = radius * parameters.spin
+        const branchAngle = (i % parameters.branches) / parameters.branches * Math.PI * 2
+
+        positions[i3] = Math.cos(branchAngle + spinAngle) * radius
+        positions[i3 + 1] = 0
+        positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius
+    }
+    
+    scene.add(points)
+}
+generateGalaxy()
+
+gui.add(parameters, 'count').min(100).max(100000).step(100).onFinishChange(generateGalaxy)
+gui.add(parameters, 'size').min(0.001).max(0.1).step(0.001).onFinishChange(generateGalaxy)
+gui.add(parameters, 'radius').min(.01).max(20).step(.01).onFinishChange(generateGalaxy)
+gui.add(parameters, 'branches').min(2).max(20).step(1).onFinishChange(generateGalaxy)
+gui.add(parameters, 'spin').min(-5).max(5).step(.001).onFinishChange(generateGalaxy)
+gui.add(parameters, 'speed').min(-5).max(5).step(.01)
 
 /**
  * Sizes
- */
+*/
 const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
 }
 
-window.addEventListener('resize', () =>
-{
+window.addEventListener('resize', () => {
     // Update sizes
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
@@ -74,9 +153,12 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  */
 const clock = new THREE.Clock()
 
-const tick = () =>
-{
+const tick = () => {
     const elapsedTime = clock.getElapsedTime()
+
+    // Update Galaxy
+    points.rotation.y = elapsedTime * parameters.speed
+
 
     // Update controls
     controls.update()
