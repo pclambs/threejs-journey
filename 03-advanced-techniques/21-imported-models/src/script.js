@@ -4,8 +4,6 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import GUI from 'lil-gui'
 
-console.log(DRACOLoader)
-
 /**
  * Base
  */
@@ -22,22 +20,23 @@ const scene = new THREE.Scene()
  * Models
  */
 const dracoLoader = new DRACOLoader()
-dracoLoader.setDecoderPath('/draco')
+dracoLoader.setDecoderPath('/draco/')
 
 const gltfLoader = new GLTFLoader()
 gltfLoader.setDRACOLoader(dracoLoader)
 
-gltfLoader.load(
-    '/models/Duck/glTF-Draco/Duck.gltf',
-    (gltf) => {
-        while (gltf.scene.children.length > 0) {
-            let child = gltf.scene.children[0]
-            child.castShadow = true
-            child.receiveShadow = true
-            scene.add(child)
-        }
 
-        // scene.add(gltf.scene)
+let mixer = null
+
+gltfLoader.load(
+    '/models/Fox/glTF/Fox.gltf',
+    (gltf) => {
+        gltf.scene.scale.set(.025, .025, .025)
+        scene.add(gltf.scene)
+
+        mixer = new THREE.AnimationMixer(gltf.scene)
+        const action = mixer.clipAction(gltf.animations[1])       
+        action.play()
     },
 )
 
@@ -131,6 +130,11 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
+
+    // Update mixer
+    if(mixer !== null) {
+        mixer.update(deltaTime)
+    }
 
     // Update controls
     controls.update()
