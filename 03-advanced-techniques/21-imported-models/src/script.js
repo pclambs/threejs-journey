@@ -23,15 +23,6 @@ const gltfLoader = new GLTFLoader()
 gltfLoader.load(
     '/models/FlightHelmet/glTF/FlightHelmet.gltf',
     (gltf) => {
-
-
-        // while (gltf.scene.children.length) {
-        //     scene.add(gltf.scene.children[0])
-        //  //     child.castShadow = true
-        //  //     child.receiveShadow = true
-        // }
-
-
         while (gltf.scene.children.length > 0) {
             let child = gltf.scene.children[0]
             child.castShadow = true
