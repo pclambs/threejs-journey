@@ -1,5 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import GUI from 'lil-gui'
 
 /**
@@ -13,6 +15,25 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
+
+/**
+ * Models
+ */
+const dracoLoader = new DRACOLoader()
+dracoLoader.setDecoderPath('/draco/')
+
+const gltfLoader = new GLTFLoader()
+gltfLoader.setDRACOLoader(dracoLoader)
+
+gltfLoader.load(
+    '/models/Duck/glTF-Draco/Duck.gltf', (gltf) => {
+        gltf.scene.scale.set(5, 5, 5)
+        gltf.scene.position.z = -5.5
+        gltf.scene.position.y = -3
+        gltf.scene.rotation.y = Math.PI * 1.45
+    scene.add(gltf.scene)
+    }
+)
 
 /**
  * Objects
@@ -35,6 +56,16 @@ const object3 = new THREE.Mesh(
 object3.position.x = 2
 
 scene.add(object1, object2, object3)
+
+/**
+ * Lights
+ */
+const ambientLight = new THREE.AmbientLight(0xffffff, .75)
+scene.add(ambientLight)
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2)
+directionalLight.position.set(5, 5, 5)
+scene.add(directionalLight)
 
 /**
  * Raycaster
@@ -72,6 +103,22 @@ const mouse = new THREE.Vector2()
 window.addEventListener('mousemove',(e) => {
     mouse.x = e.clientX / sizes.width * 2 - 1
     mouse.y = - (e.clientY / sizes.height * 2 - 1)
+})
+
+window.addEventListener('click', () =>  {
+    if(currentIntersect) {
+        switch(currentIntersect.object) {
+            case object1:
+                console.log('click on object1')
+                break
+            case object2:
+                console.log('click on object2')
+                break
+            case object3:
+                console.log('click on object3')
+                break
+        }
+    }
 })
 
 /**
