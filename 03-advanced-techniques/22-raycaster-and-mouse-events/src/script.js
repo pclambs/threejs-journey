@@ -19,19 +19,22 @@ const scene = new THREE.Scene()
 /**
  * Models
  */
-const dracoLoader = new DRACOLoader()
-dracoLoader.setDecoderPath('/draco/')
+// const dracoLoader = new DRACOLoader()
+// dracoLoader.setDecoderPath('/draco/')
 
 const gltfLoader = new GLTFLoader()
-gltfLoader.setDRACOLoader(dracoLoader)
+// gltfLoader.setDRACOLoader(dracoLoader)
+
+let model = null
 
 gltfLoader.load(
-    '/models/Duck/glTF-Draco/Duck.gltf', (gltf) => {
-        gltf.scene.scale.set(5, 5, 5)
-        gltf.scene.position.z = -5.5
-        gltf.scene.position.y = -3
-        gltf.scene.rotation.y = Math.PI * 1.45
-    scene.add(gltf.scene)
+    '/models/Duck/glTF-Binary/Duck.glb', (gltf) => {
+        model = gltf.scene
+        model.scale.set(5, 5, 5)
+        model.position.z = -5.5
+        model.position.y = -3
+        model.rotation.y = Math.PI * 1.45
+    scene.add(model)
     }
 )
 
@@ -60,7 +63,7 @@ scene.add(object1, object2, object3)
 /**
  * Lights
  */
-const ambientLight = new THREE.AmbientLight(0xffffff, .75)
+const ambientLight = new THREE.AmbientLight(0xffffff, .5)
 scene.add(ambientLight)
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 2)
@@ -189,6 +192,20 @@ const tick = () =>
         }
         currentIntersect = null
     }
+
+    if(model) {
+
+        const modelIntersects = raycaster.intersectObject(model)
+            // big duck on mouseover
+            if(modelIntersects.length) {
+                model.scale.set(5, 5, 5)
+                model.position.y = -6
+            } else {
+                model.scale.set(1, 1, 1)
+                model.position.y = -3
+            }
+    }
+
 
     // Update controls
     controls.update()
