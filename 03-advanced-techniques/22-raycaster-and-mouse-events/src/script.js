@@ -32,7 +32,7 @@ gltfLoader.load(
         model = gltf.scene
         model.scale.set(5, 5, 5)
         model.position.z = -5.5
-        model.position.y = -3
+        model.position.y = -3 
         model.rotation.y = Math.PI * 1.45
     scene.add(model)
     }
